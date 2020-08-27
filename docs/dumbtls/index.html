@@ -17,7 +17,7 @@
 </script>
 <!-- End KaTeX header -->
 
-<style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../dumbtls/index.html'><div class='logo-container'><img src='../rust-logo.png' alt='logo'></div></a><p class='location'>Crate dumbtls</p><div class='block version'><p>Version 0.1.0</p></div><div class="sidebar-elems"><a id='all-types' href='all.html'><p>See all dumbtls's items</p></a><div class="block items"><ul><li><a href="#modules">Modules</a></li></ul></div><p class='location'></p><script>window.sidebarCurrent = {name: 'dumbtls', ty: 'mod', relpath: '../'};</script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/dumbtls/lib.rs.html#1-43' title='goto source code'>[src]</a></span><span class='in-band'>Crate <a class="mod" href=''>dumbtls</a></span></h1><div class='docblock'><h1 id="dumbtls" class="section-header"><a href="#dumbtls">DumbTLS</a></h1>
+<style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../dumbtls/index.html'><div class='logo-container'><img src='../rust-logo.png' alt='logo'></div></a><p class='location'>Crate dumbtls</p><div class='block version'><p>Version 0.1.0</p></div><div class="sidebar-elems"><a id='all-types' href='all.html'><p>See all dumbtls's items</p></a><div class="block items"><ul><li><a href="#modules">Modules</a></li></ul></div><p class='location'></p><script>window.sidebarCurrent = {name: 'dumbtls', ty: 'mod', relpath: '../'};</script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/dumbtls/lib.rs.html#1-64' title='goto source code'>[src]</a></span><span class='in-band'>Crate <a class="mod" href=''>dumbtls</a></span></h1><div class='docblock'><h1 id="dumbtls" class="section-header"><a href="#dumbtls">DumbTLS</a></h1>
 <p>DumbTLS is intended as a tool to help explain the relationship between the
 theoretical mathematics underpinning the security of cryptographic
 algorithms, and their practical implementation details. The goal of this
@@ -26,7 +26,27 @@ not been paid to securing this library against side-channel attacks of any
 kind, and the techniques used will be inefficient compared to the internal
 details of any modern cryptography library. Instead, attention has been paid
 to code readability, commenting, and documentation.</p>
-<p>The documentation you are reading currently will clearly cover the maths</p>
+<p>The documentation you are reading currently will clearly cover some of the
+maths involved in many cryptosystems, and point to resources to learn more.
+I also intend to talk about some of the implementation details, and how some
+techniques are used to improve the efficiency of these algorithms.</p>
+<p>If you're not familiar with the Rust documentation style, on any page, you
+can click the &quot;[src]&quot; link in the top-right to view the source.
+Alternatively, you can read the source code on
+<a href="https://github.com/somewheresafetosea/DumbTLS">Github</a>.</p>
+<p>The most interesting stuff is definitely contained within the <a href="../dumbtls/ciphers/index.html" title="`ciphers`"><code>ciphers</code></a>
+module:</p>
+<ul>
+<li><a href="ciphers/feistel/index.html">Implementation of a Feistel Network</a>
+(<a href="../src/dumbtls/ciphers/feistel.rs.html">src</a>)</li>
+<li><a href="ciphers/des/index.html">DES</a> (<a href="../src/dumbtls/ciphers/des.rs.html">src</a>)</li>
+<li><a href="ciphers/aes/index.html">AES</a> (<a href="../src/dumbtls/ciphers/aes.rs.html">src</a>)</li>
+<li><a href="ciphers/rsa/index.html">RSA</a> (<a href="../src/dumbtls/ciphers/rsa.rs.html">src</a>)</li>
+<li><a href="ciphers/oaep/index.html">RSAES-OAEP</a>
+(<a href="../src/dumbtls/ciphers/oaep.rs.html">src</a>)</li>
+<li><a href="ciphers/block/index.html">Block cipher modes of operation</a>
+(<a href="../src/dumbtls/ciphers/block.rs.html">src</a>)</li>
+</ul>
 <h2 id="building" class="section-header"><a href="#building">Building</a></h2>
 <p>DumbTLS is written in Rust, and requires the Rust toolchain to be installed
 in order to be built, please see <a href="https://rustup.rs">rustup.rs</a> for

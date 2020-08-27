@@ -236,9 +236,27 @@
 <span id="217">217</span>
 <span id="218">218</span>
 <span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Implementation of RSAES-OAEP (RSA with Optimal Asymmetric Encryption</span>
 <span class="doccomment">//! Padding).</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! RSA, as initially described within the academic literature, is not suitable</span>
+<span class="doccomment">//! for cryptographic use: Encryption is entirely deterministic, so the same</span>
+<span class="doccomment">//! plaintext will always encrypt to the same ciphertext when the same key is</span>
+<span class="doccomment">//! used. Furthermore, RSA is highly mathematically structured, and has some</span>
+<span class="doccomment">//! vulnerabilities (e.g: via multiplicativity) due to this. It is for this</span>
+<span class="doccomment">//! reason that RSA must only be used with a secure padding scheme. One such</span>
+<span class="doccomment">//! scheme, which is recommended for modern use, is Optimal Asymmetric</span>
+<span class="doccomment">//! Encryption Padding (OAEP).</span>
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">bytes</span>::<span class="ident">Bytes</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ciphers</span>::<span class="ident">feistel</span>::{<span class="ident">FeistelCipher</span>, <span class="ident">FeistelCipherError</span>, <span class="ident">FeistelResult</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ciphers</span>::<span class="ident">rsa</span>::{<span class="ident">RSAKey</span>, <span class="ident">RSAResult</span>, <span class="ident">bytes_to_integer</span>, <span class="ident">integer_to_bytes</span>, <span class="ident">encrypt_int</span>, <span class="ident">decrypt_int</span>};

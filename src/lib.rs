@@ -8,7 +8,28 @@
 //! details of any modern cryptography library. Instead, attention has been paid
 //! to code readability, commenting, and documentation.
 //!
-//! The documentation you are reading currently will clearly cover the maths
+//! The documentation you are reading currently will clearly cover some of the
+//! maths involved in many cryptosystems, and point to resources to learn more.
+//! I also intend to talk about some of the implementation details, and how some
+//! techniques are used to improve the efficiency of these algorithms.
+//!
+//! If you're not familiar with the Rust documentation style, on any page, you
+//! can click the "\[src\]" link in the top-right to view the source.
+//! Alternatively, you can read the source code on
+//! [Github](https://github.com/somewheresafetosea/DumbTLS).
+//!
+//! The most interesting stuff is definitely contained within the [`ciphers`]
+//! module:
+//!
+//! * [Implementation of a Feistel Network](ciphers/feistel/index.html)
+//!   ([src](../src/dumbtls/ciphers/feistel.rs.html))
+//! * [DES](ciphers/des/index.html) ([src](../src/dumbtls/ciphers/des.rs.html))
+//! * [AES](ciphers/aes/index.html) ([src](../src/dumbtls/ciphers/aes.rs.html))
+//! * [RSA](ciphers/rsa/index.html) ([src](../src/dumbtls/ciphers/rsa.rs.html))
+//! * [RSAES-OAEP](ciphers/oaep/index.html)
+//!   ([src](../src/dumbtls/ciphers/oaep.rs.html))
+//! * [Block cipher modes of operation](ciphers/block/index.html)
+//!   ([src](../src/dumbtls/ciphers/block.rs.html))
 //!
 //! ## Building
 //! DumbTLS is written in Rust, and requires the Rust toolchain to be installed
