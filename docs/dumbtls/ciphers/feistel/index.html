@@ -1,0 +1,84 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `feistel` mod in crate `dumbtls`."><meta name="keywords" content="rust, rustlang, rust-lang, feistel"><title>dumbtls::ciphers::feistel - Rust</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../favicon.ico"><!-- KaTeX header originally from Paul Kernfeld, used under the MIT/Apache-2.0
+    license. See: https://github.com/paulkernfeld/rustdoc-katex-demo -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js"                  integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js"    integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+            delimiters: [
+                {left: "$$", right: "$$", display: true},
+                {left: "\\(", right: "\\)", display: false},
+                {left: "$", right: "$", display: false},
+                {left: "\\[", right: "\\]", display: true}
+            ]
+        });
+    });
+</script>
+<!-- End KaTeX header -->
+
+<style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../dumbtls/index.html'><div class='logo-container'><img src='../../../rust-logo.png' alt='logo'></div></a><p class='location'>Module feistel</p><div class="sidebar-elems"><div class="block items"><ul><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#traits">Traits</a></li><li><a href="#types">Type Definitions</a></li></ul></div><p class='location'><a href='../../index.html'>dumbtls</a>::<wbr><a href='../index.html'>ciphers</a></p><script>window.sidebarCurrent = {name: 'feistel', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../../../src/dumbtls/ciphers/feistel.rs.html#1-244' title='goto source code'>[src]</a></span><span class='in-band'>Module <a href='../../index.html'>dumbtls</a>::<wbr><a href='../index.html'>ciphers</a>::<wbr><a class="mod" href=''>feistel</a></span></h1><div class='docblock'><p>Traits and structs for implementing ciphers built around Feistel Networks.</p>
+<p>Feistel networks are a generic structure for implementing block ciphers with
+heavy confusion and diffusion, originally designed by Horst Feistel. For a
+cipher to implement confusion and diffusion, a common technique is to
+perform multiple &quot;rounds&quot;: In each round, the key is used to encrypt the
+text somehow, then the text is shuffled round, with the next round depending
+on the previous round. With sufficient rounds, this technique can be very
+easily used to implement very strong confusion and diffusion, however, to
+reverse the encryption, it is necessary to invert each round, which may be
+mathematically impossible.</p>
+<p>Feistel networks provide a simple solution to implementing multiple-round
+ciphers. In each round, the text to encrypt is split into two halves. The
+second half is run through a round function with the key as an input, and
+the result is then Xor'd with the first half. The output of the round is
+then created by concatenating the second half (entirely unaltered), with
+this Xor'd first half, so that the alteed first half is now placed second.
+In the next round, the same process is done, so the new second half is run
+through the round function, then Xor'd with the new first half (which was
+the second half in the previous round). The output of each round only
+encrypts half of the message. This means that a Feistel cipher is extremely
+easy to invert, given the key: You simply do the same operations in reverse.</p>
+<p>The layout of a Feistel cipher is shown in the diagram below, with <code>F</code>
+denoting the round function.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+      <span class="ident">Encryption</span>:          <span class="ident">Decryption</span>:
+    <span class="ident">L0</span>           <span class="ident">R0</span>    <span class="ident">RN</span><span class="op">+</span><span class="number">1</span>          <span class="ident">LN</span><span class="op">+</span><span class="number">1</span>
+    <span class="op">|</span>             <span class="op">|</span>      <span class="op">|</span>             <span class="op">|</span>
+    <span class="op">|</span>     <span class="ident">Key</span>     <span class="op">|</span>      <span class="op">|</span>     <span class="ident">Key</span>     <span class="op">|</span>
+    <span class="op">|</span>      <span class="op">|</span>      <span class="op">|</span>      <span class="op">|</span>      <span class="op">|</span>      <span class="op">|</span>
+    <span class="ident">v</span>      <span class="ident">v</span>      <span class="op">|</span>      <span class="ident">v</span>      <span class="ident">v</span>      <span class="op">|</span>
+   <span class="ident">Xor</span> &lt;-<span class="op">-</span> <span class="ident">F</span> &lt;-<span class="op">-</span><span class="op">-</span><span class="op">-</span><span class="op">+</span>     <span class="ident">Xor</span> &lt;-<span class="op">-</span> <span class="ident">F</span> &lt;-<span class="op">-</span><span class="op">-</span><span class="op">-</span><span class="op">+</span>
+    <span class="op">|</span>             <span class="op">|</span>      <span class="op">|</span>             <span class="op">|</span>
+    <span class="ident">v</span>             <span class="ident">v</span>      <span class="ident">v</span>             <span class="ident">v</span>
+    <span class="ident">R1</span>           <span class="ident">L1</span>      <span class="ident">LN</span>           <span class="ident">RN</span>
+    <span class="op">|</span>             <span class="op">|</span>      <span class="op">|</span>             <span class="op">|</span>
+    <span class="op">|</span>     <span class="ident">Key</span>     <span class="op">|</span>      <span class="op">|</span>     <span class="ident">Key</span>     <span class="op">|</span>
+    <span class="op">|</span>      <span class="op">|</span>      <span class="op">|</span>      <span class="op">|</span>      <span class="op">|</span>      <span class="op">|</span>
+    <span class="op">|</span>      <span class="ident">v</span>      <span class="ident">v</span>      <span class="op">|</span>      <span class="ident">v</span>      <span class="ident">v</span>
+    <span class="op">+</span><span class="op">-</span><span class="op">-</span><span class="op">-</span><span class="op">-&gt;</span> <span class="ident">F</span> <span class="op">-</span><span class="op">-&gt;</span> <span class="ident">Xor</span>     <span class="op">+</span><span class="op">-</span><span class="op">-</span><span class="op">-</span><span class="op">-&gt;</span> <span class="ident">F</span> <span class="op">-</span><span class="op">-&gt;</span> <span class="ident">Xor</span>
+    <span class="op">|</span>             <span class="op">|</span>      <span class="op">|</span>             <span class="op">|</span>
+    <span class="ident">v</span>             <span class="ident">v</span>      <span class="ident">v</span>             <span class="ident">v</span>
+    <span class="ident">L2</span>           <span class="ident">R2</span>    <span class="ident">RN</span><span class="op">-</span><span class="number">1</span>          <span class="ident">LN</span><span class="op">-</span><span class="number">1</span>
+         . . .                . . .
+    <span class="op">|</span>             <span class="op">|</span>      <span class="op">|</span>             <span class="op">|</span>
+    <span class="ident">v</span>             <span class="ident">v</span>      <span class="ident">v</span>             <span class="ident">v</span>
+    <span class="ident">LN</span>           <span class="ident">RN</span>      <span class="ident">R1</span>           <span class="ident">L1</span>
+    <span class="op">|</span>             <span class="op">|</span>      <span class="op">|</span>             <span class="op">|</span>
+    <span class="op">|</span>     <span class="ident">Key</span>     <span class="op">|</span>      <span class="op">|</span>     <span class="ident">Key</span>     <span class="op">|</span>
+    <span class="op">|</span>      <span class="op">|</span>      <span class="op">|</span>      <span class="op">|</span>      <span class="op">|</span>      <span class="op">|</span>
+    <span class="ident">v</span>      <span class="ident">v</span>      <span class="op">|</span>      <span class="ident">v</span>      <span class="ident">v</span>      <span class="op">|</span>
+   <span class="ident">Xor</span> &lt;-<span class="op">-</span> <span class="ident">F</span> &lt;-<span class="op">-</span><span class="op">-</span><span class="op">-</span><span class="op">+</span>     <span class="ident">Xor</span> &lt;-<span class="op">-</span> <span class="ident">F</span> &lt;-<span class="op">-</span><span class="op">-</span><span class="op">-</span><span class="op">+</span>
+    <span class="op">|</span>             <span class="op">|</span>      <span class="op">|</span>             <span class="op">|</span>
+    <span class="ident">v</span>             <span class="ident">v</span>      <span class="ident">v</span>             <span class="ident">v</span>
+   <span class="ident">RN</span><span class="op">+</span><span class="number">1</span>         <span class="ident">LN</span><span class="op">+</span><span class="number">1</span>     <span class="ident">L0</span>           <span class="ident">R0</span></pre></div>
+<p>The Feistel Network structure is made use of by a number of well known
+ciphers, including DES and RSAES-OAEP.</p>
+</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table><tr class='module-item'><td><a class="struct" href="struct.FeistelNetwork.html" title='dumbtls::ciphers::feistel::FeistelNetwork struct'>FeistelNetwork</a></td><td class='docblock-short'><p>Feistel Network implementation</p>
+</td></tr></table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
+<table><tr class='module-item'><td><a class="enum" href="enum.FeistelCipherError.html" title='dumbtls::ciphers::feistel::FeistelCipherError enum'>FeistelCipherError</a></td><td class='docblock-short'><p>Errors encountered while encrypting/decrypting using a Feistel Network.</p>
+</td></tr></table><h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
+<table><tr class='module-item'><td><a class="trait" href="trait.FeistelCipher.html" title='dumbtls::ciphers::feistel::FeistelCipher trait'>FeistelCipher</a></td><td class='docblock-short'><p>Trait for ciphers which work using a Feistel network.</p>
+</td></tr></table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>
+<table><tr class='module-item'><td><a class="type" href="type.FeistelResult.html" title='dumbtls::ciphers::feistel::FeistelResult type'>FeistelResult</a></td><td class='docblock-short'></td></tr></table></section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "dumbtls";</script><script src="../../../main.js"></script><script defer src="../../../search-index.js"></script></body></html>

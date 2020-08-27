@@ -1,4 +1,2 @@
-/target/CACHEDIR.tag
-/target/debug
-/target/rls
+/target
 Cargo.lock
