@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["pad","Pad the given content using PKCS #7."],["unpad","Remnove PKCS #7 padding from the given content."]],"struct":[["InvalidPadding","Represents an error encountered when trying to remove padding."]]});

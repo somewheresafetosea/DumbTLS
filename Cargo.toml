@@ -1,0 +1,17 @@
+[package]
+name = "dumbtls"
+version = "0.1.0"
+authors = ["Tom Stoneham <tom@sto.neh.am>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+base64 = "0.12.3"
+hex = "0.4.2"
+rand = "0.7.3"
+rug = "1.10.0"
+# I plan to implement these hash functions myself a bit further down the road,
+# but for the time being, I don't have the time
+sha-1 = "0.9.1"
+sha2 = "0.9.1"
