@@ -1,1 +1,0 @@
-initSidebarItems({"mod":[["null","Functions for adding/removing null-byte padding."],["pkcs7","Functions for adding/removing padding according to the PKCS #7 standard"]],"struct":[["NULL",""],["PKCS7",""]],"trait":[["PaddingScheme",""]]});

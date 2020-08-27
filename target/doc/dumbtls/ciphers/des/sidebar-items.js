@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["DESBlock","DES internal block ciper."]],"type":[["DES","DES cipher"]]});

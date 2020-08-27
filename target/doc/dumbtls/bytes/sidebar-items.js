@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["XorLengthError","Error returned if the user tries to xor two byte sequences of different lengths"]],"trait":[["SequenceXor","Trait for sequences of bytes that can be xor'd with other sequences of bytes."]],"type":[["Bytes","The `Bytes` type represents an arbitrarily long sequence of raw bytes in memory."]]});

@@ -1,1 +1,0 @@
-initSidebarItems({"enum":[["FeistelCipherError","Errors encountered while encrypting/decrypting using a Feistel Network."]],"struct":[["FeistelNetwork","Feistel Network implementation"]],"trait":[["FeistelCipher","Trait for ciphers which work using a Feistel network."]],"type":[["FeistelResult",""]]});
