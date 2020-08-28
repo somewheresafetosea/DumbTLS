@@ -355,6 +355,39 @@
 <span id="336">336</span>
 <span id="337">337</span>
 <span id="338">338</span>
+<span id="339">339</span>
+<span id="340">340</span>
+<span id="341">341</span>
+<span id="342">342</span>
+<span id="343">343</span>
+<span id="344">344</span>
+<span id="345">345</span>
+<span id="346">346</span>
+<span id="347">347</span>
+<span id="348">348</span>
+<span id="349">349</span>
+<span id="350">350</span>
+<span id="351">351</span>
+<span id="352">352</span>
+<span id="353">353</span>
+<span id="354">354</span>
+<span id="355">355</span>
+<span id="356">356</span>
+<span id="357">357</span>
+<span id="358">358</span>
+<span id="359">359</span>
+<span id="360">360</span>
+<span id="361">361</span>
+<span id="362">362</span>
+<span id="363">363</span>
+<span id="364">364</span>
+<span id="365">365</span>
+<span id="366">366</span>
+<span id="367">367</span>
+<span id="368">368</span>
+<span id="369">369</span>
+<span id="370">370</span>
+<span id="371">371</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! RSA encryption/decryption primitives.</span>
 <span class="doccomment">//!</span>
@@ -458,6 +491,39 @@
 <span class="doccomment">//! scale of those used by RSA, the possibility of RSA&#39;s key assumptions being</span>
 <span class="doccomment">//! undermined must be a serious consideration for anyone using RSA in the</span>
 <span class="doccomment">//! modern age.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! # Example usage (without padding)</span>
+<span class="doccomment">//! See the [OAEP module](../oaep/index.html) for an example using padding.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! ``` rust</span>
+<span class="doccomment">//! use dumbtls::bytes::Bytes;</span>
+<span class="doccomment">//! use dumbtls::ciphers::{rsa, rsa::RSAKey};</span>
+<span class="doccomment">//! use dumbtls::encoding::hex::{FromHex, ToHex};</span>
+<span class="doccomment">//! use dumbtls::keygen::gen_key_rsa;</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! fn main() {</span>
+<span class="doccomment">//!     let keypair = gen_key_rsa(rsa::RSAKeysize::Key512Bit);</span>
+<span class="doccomment">//!     println!(&quot;Key modulus: {}&quot;, keypair.public.get_modulus());</span>
+<span class="doccomment">//!     println!(&quot;Public exponent: {}&quot;, keypair.public.get_exponent());</span>
+<span class="doccomment">//!     println!(&quot;Private exponent: {}&quot;, keypair.private.get_exponent());</span>
+<span class="doccomment">//!     let plaintext = Bytes::from_hex(&quot;cafebabe&quot;).unwrap();</span>
+<span class="doccomment">//!     println!(&quot;Plaintext: {}&quot;, plaintext.to_hex());</span>
+<span class="doccomment">//!     let plaintext_int = rsa::bytes_to_integer(&amp;plaintext);</span>
+<span class="doccomment">//!     let ciphertext_int = rsa::encrypt_int(&amp;keypair.public, plaintext_int).unwrap();</span>
+<span class="doccomment">//!     let ciphertext = rsa::integer_to_bytes(ciphertext_int.clone(), 64).unwrap();</span>
+<span class="doccomment">//!     println!(&quot;Ciphertext: {}&quot;, ciphertext.to_hex());</span>
+<span class="doccomment">//!     let plaintext_int = rsa::decrypt_int(&amp;keypair.private, ciphertext_int).unwrap();</span>
+<span class="doccomment">//!     let plaintext = rsa::integer_to_bytes(plaintext_int.clone(), 4).unwrap();</span>
+<span class="doccomment">//!     println!(&quot;Decrypted ciphertext: {}&quot;, plaintext.to_hex());</span>
+<span class="doccomment">//!     // Example output:</span>
+<span class="doccomment">//!     // Key modulus: 78445037715101259013909099418635822507710... (Truncated)</span>
+<span class="doccomment">//!     // Public exponent: 65537</span>
+<span class="doccomment">//!     // Private exponent: 506971569101898748116959870893742506... (Truncated)</span>
+<span class="doccomment">//!     // Plaintext: cafebabe</span>
+<span class="doccomment">//!     // Ciphertext: 0006b41d33536de82c6e30694c1af6553e1b831e80... (Truncated)</span>
+<span class="doccomment">//!     // Decrypted ciphertext: cafebabe</span>
+<span class="doccomment">//! }</span>
+<span class="doccomment">//! ```</span>
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">bytes</span>::{<span class="ident">Bytes</span>};
 <span class="kw">use</span> <span class="ident">rug</span>::{<span class="ident">Integer</span>, <span class="ident">ops</span>::<span class="ident">Pow</span>};
 

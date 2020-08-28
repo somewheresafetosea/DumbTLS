@@ -60,6 +60,9 @@
 //!
 //! The Feistel Network structure is made use of by a number of well known
 //! ciphers, including DES and RSAES-OAEP.
+//!
+//! To see an example usage of the traits and structs in this module, take a
+//! look at the [DES source](../../../src/dumbtls/ciphers/des.rs.html).
 use crate::bytes::{Bytes, SequenceXor};
 use crate::ciphers::block::BlockCipher;
 

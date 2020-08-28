@@ -100,6 +100,39 @@
 //! scale of those used by RSA, the possibility of RSA's key assumptions being
 //! undermined must be a serious consideration for anyone using RSA in the
 //! modern age.
+//!
+//! # Example usage (without padding)
+//! See the [OAEP module](../oaep/index.html) for an example using padding.
+//!
+//! ``` rust
+//! use dumbtls::bytes::Bytes;
+//! use dumbtls::ciphers::{rsa, rsa::RSAKey};
+//! use dumbtls::encoding::hex::{FromHex, ToHex};
+//! use dumbtls::keygen::gen_key_rsa;
+//!
+//! fn main() {
+//!     let keypair = gen_key_rsa(rsa::RSAKeysize::Key512Bit);
+//!     println!("Key modulus: {}", keypair.public.get_modulus());
+//!     println!("Public exponent: {}", keypair.public.get_exponent());
+//!     println!("Private exponent: {}", keypair.private.get_exponent());
+//!     let plaintext = Bytes::from_hex("cafebabe").unwrap();
+//!     println!("Plaintext: {}", plaintext.to_hex());
+//!     let plaintext_int = rsa::bytes_to_integer(&plaintext);
+//!     let ciphertext_int = rsa::encrypt_int(&keypair.public, plaintext_int).unwrap();
+//!     let ciphertext = rsa::integer_to_bytes(ciphertext_int.clone(), 64).unwrap();
+//!     println!("Ciphertext: {}", ciphertext.to_hex());
+//!     let plaintext_int = rsa::decrypt_int(&keypair.private, ciphertext_int).unwrap();
+//!     let plaintext = rsa::integer_to_bytes(plaintext_int.clone(), 4).unwrap();
+//!     println!("Decrypted ciphertext: {}", plaintext.to_hex());
+//!     // Example output:
+//!     // Key modulus: 78445037715101259013909099418635822507710... (Truncated)
+//!     // Public exponent: 65537
+//!     // Private exponent: 506971569101898748116959870893742506... (Truncated)
+//!     // Plaintext: cafebabe
+//!     // Ciphertext: 0006b41d33536de82c6e30694c1af6553e1b831e80... (Truncated)
+//!     // Decrypted ciphertext: cafebabe
+//! }
+//! ```
 use crate::bytes::{Bytes};
 use rug::{Integer, ops::Pow};
 
