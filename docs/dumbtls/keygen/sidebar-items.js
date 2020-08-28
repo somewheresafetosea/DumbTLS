@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["gen_key_aes",""],["gen_key_des",""],["gen_key_rsa",""]]});
+initSidebarItems({"fn":[["gen_aes_iv","Generate an IV for use with AES."],["gen_key_aes","Generate a key for use in AES encryption/decryption.."],["gen_key_des","Generate a key for use in DES encryption/decryption."],["gen_key_rsa","Generate an RSA keypair of the desired size."],["gen_odd","Generate a random odd number of size `num_bytes`."],["gen_prime","Generate a random prime number of size `num_bytes`."]]});

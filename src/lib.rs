@@ -23,13 +23,15 @@
 //!
 //! * [Implementation of a Feistel Network](ciphers/feistel/index.html)
 //!   ([src](../src/dumbtls/ciphers/feistel.rs.html))
+//! * [RSA](ciphers/rsa/index.html) ([src](../src/dumbtls/ciphers/rsa.rs.html))
 //! * [DES](ciphers/des/index.html) ([src](../src/dumbtls/ciphers/des.rs.html))
 //! * [AES](ciphers/aes/index.html) ([src](../src/dumbtls/ciphers/aes.rs.html))
-//! * [RSA](ciphers/rsa/index.html) ([src](../src/dumbtls/ciphers/rsa.rs.html))
 //! * [RSAES-OAEP](ciphers/oaep/index.html)
 //!   ([src](../src/dumbtls/ciphers/oaep.rs.html))
 //! * [Block cipher modes of operation](ciphers/block/index.html)
 //!   ([src](../src/dumbtls/ciphers/block.rs.html))
+//!
+//! Example usage of each cipher should be included in each one's documentation.
 //!
 //! ## Building
 //! DumbTLS is written in Rust, and requires the Rust toolchain to be installed

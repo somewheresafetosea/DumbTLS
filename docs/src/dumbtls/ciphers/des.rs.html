@@ -417,6 +417,12 @@
 <span id="398">398</span>
 <span id="399">399</span>
 <span id="400">400</span>
+<span id="401">401</span>
+<span id="402">402</span>
+<span id="403">403</span>
+<span id="404">404</span>
+<span id="405">405</span>
+<span id="406">406</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Implementation of DES.</span>
 <span class="doccomment">//!</span>
@@ -459,6 +465,12 @@
 <span class="doccomment">//! to the possibility of there being a backdoor. However, it was later revealed</span>
 <span class="doccomment">//! that the NSA&#39;s input was intended to strengthen DES against the (at the</span>
 <span class="doccomment">//! time) non-public differential cryptanalysis attack.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! # Example usage</span>
+<span class="doccomment">//! ``` rust</span>
+<span class="doccomment">//! use dumbtls::ciphers::DES;</span>
+<span class="doccomment">//! use dumbtls::keygen;</span>
+<span class="doccomment">//! ```</span>
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">bytes</span>::{<span class="ident">Bytes</span>, <span class="ident">SequenceXor</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ciphers</span>::<span class="ident">feistel</span>::{<span class="ident">FeistelCipher</span>, <span class="ident">FeistelCipherError</span>, <span class="ident">FeistelNetwork</span>, <span class="ident">FeistelResult</span>};
 

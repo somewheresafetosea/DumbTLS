@@ -39,6 +39,12 @@
 //! to the possibility of there being a backdoor. However, it was later revealed
 //! that the NSA's input was intended to strengthen DES against the (at the
 //! time) non-public differential cryptanalysis attack.
+//!
+//! # Example usage
+//! ``` rust
+//! use dumbtls::ciphers::DES;
+//! use dumbtls::keygen;
+//! ```
 use crate::bytes::{Bytes, SequenceXor};
 use crate::ciphers::feistel::{FeistelCipher, FeistelCipherError, FeistelNetwork, FeistelResult};
 
