@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Sha1",""]]});
+initSidebarItems({"struct":[["Sha1","The SHA-1 hashing algorithm."]]});

@@ -3,6 +3,7 @@ pub use sha2::Digest;
 use crate::hashes::HashFunction;
 use crate::bytes::Bytes;
 
+/// The SHA-2 hashing algorithm.
 pub struct Sha2<T: Digest> {
     pub hasher: T
 }

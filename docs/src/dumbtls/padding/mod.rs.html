@@ -74,6 +74,20 @@
 <span id="55">55</span>
 <span id="56">56</span>
 <span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Utilities for adding/removing padding from bytes.</span>
 <span class="doccomment">//!</span>
@@ -99,16 +113,26 @@
 <span class="doccomment">//! input is simply encrypted without alteration, is actually deeply flawed in</span>
 <span class="doccomment">//! terms of security. It is necessary to alter the input in order for it to be</span>
 <span class="doccomment">//! secure, which is done via a specific padding scheme.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! This module contains implementations of PKCS #7 padding, and null byte</span>
+<span class="doccomment">//! padding. I plan to implement some more padding schemes in the future.</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">null</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">pkcs7</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">bytes</span>::<span class="ident">Bytes</span>;
 
+<span class="doccomment">/// Trait for a padding algorithm.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">PaddingScheme</span> {
+    <span class="doccomment">/// Pad the given input, so that its length is a multiple of `block_size`.</span>
     <span class="kw">fn</span> <span class="ident">pad</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">content</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Bytes</span>, <span class="ident">block_size</span>: <span class="ident">usize</span>);
+    <span class="doccomment">/// Remove any padding from the given input.</span>
     <span class="kw">fn</span> <span class="ident">unpad</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">padded_content</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Bytes</span>);
 }
 
+<span class="doccomment">/// PKCS #7 padding.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// See [the `pkcs7` module](./pkcs7/index.html) for much more information on</span>
+<span class="doccomment">/// this algorithm.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PKCS7</span> { }
 
 <span class="kw">impl</span> <span class="ident">PaddingScheme</span> <span class="kw">for</span> <span class="ident">PKCS7</span> {
@@ -121,6 +145,10 @@
     }
 }
 
+<span class="doccomment">/// Null byte padding.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// See [the `null` module](./null/index.html) for more information on this</span>
+<span class="doccomment">/// algorithm.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">NULL</span> { }
 
 <span class="kw">impl</span> <span class="ident">PaddingScheme</span> <span class="kw">for</span> <span class="ident">NULL</span> {

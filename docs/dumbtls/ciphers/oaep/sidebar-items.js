@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["MGF1",""],["OAEPBlock",""]],"trait":[["MaskGenerationFunction",""]],"type":[["OAEP",""]]});
+initSidebarItems({"struct":[["MGF1","Implementation of MGF1, as defined in PKCS #1."],["OAEPBlock","Internal RSAES-OAEP algorithm."]],"trait":[["MaskGenerationFunction","Trait for algorithms that implement a Mask Generation Function."]],"type":[["OAEP","OAEP for RSA."]]});

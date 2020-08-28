@@ -39,12 +39,14 @@
 <span id="20">20</span>
 <span id="21">21</span>
 <span id="22">22</span>
+<span id="23">23</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">sha1</span>;
 <span class="kw">use</span> <span class="ident">sha1</span>::<span class="ident">Digest</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">hashes</span>::<span class="ident">HashFunction</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">bytes</span>::<span class="ident">Bytes</span>;
 
+<span class="doccomment">/// The SHA-1 hashing algorithm.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Sha1</span> { }
 
 <span class="kw">impl</span> <span class="ident">HashFunction</span> <span class="kw">for</span> <span class="ident">Sha1</span> {

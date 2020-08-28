@@ -3,6 +3,7 @@ use sha1::Digest;
 use crate::hashes::HashFunction;
 use crate::bytes::Bytes;
 
+/// The SHA-1 hashing algorithm.
 pub struct Sha1 { }
 
 impl HashFunction for Sha1 {

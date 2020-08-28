@@ -68,12 +68,16 @@ use rand::{thread_rng, RngCore};
 use rug::Integer;
 use std::iter;
 
+/// OAEP for RSA.
+///
+/// Wrapper around a Feistel Network with the OAEP internal block cipher.
 pub type OAEP<T, U, V> = FeistelNetwork<OAEPBlock<T, U, V>>;
 
 impl<T> OAEP<T, Sha2<Sha256>, MGF1>
 where
     T: RSAKey,
 {
+    /// Create a new instance of the RSAES-OAEP algorithm.
     pub fn new(key: T) -> OAEP<T, Sha2<Sha256>, MGF1> {
         let mut seed = vec![0; 32];
         thread_rng().fill_bytes(&mut seed);
@@ -90,6 +94,10 @@ where
     }
 }
 
+/// Internal RSAES-OAEP algorithm.
+///
+/// Used within a [`FeistelNetwork`] instance. Please don't use this directly:
+/// Use [`OAEP`] instead.
 pub struct OAEPBlock<T, U, V>
 where
     T: RSAKey,
@@ -109,7 +117,8 @@ where
     U: HashFunction,
     V: MaskGenerationFunction<U>
 {
-    fn remove_padding(&mut self, plaintext: &Bytes) -> FeistelResult<Bytes> {
+    /// Remove the padding applied to a message by OAEP.
+    pub fn remove_padding(&mut self, plaintext: &Bytes) -> FeistelResult<Bytes> {
         let mut msg_start: usize = 0;
         let mut encountered_boundary = false;
 
@@ -279,10 +288,19 @@ where
     }
 }
 
+/// Trait for algorithms that implement a Mask Generation Function.
+///
+/// A Mask Generation Function, within OAEP, takes a pseudo-random input, and
+/// uses this to produce an arbitrary-sized output. Within the PKCS #1 spec,
+/// only one such Mask Generation Function is defined (referred to as MGF1),
+/// which uses an arbitrary hash function to generate output, however the spec
+/// is designed such that any hash function should be able to be used.
 pub trait MaskGenerationFunction<T: HashFunction> {
+    /// Use `seed` to generate a mask of length `length` in bytes.
     fn generate_mask(seed: &Bytes, length: usize) -> RSAResult<Bytes>;
 }
 
+/// Implementation of MGF1, as defined in PKCS #1.
 pub struct MGF1 { }
 
 impl<T: HashFunction> MaskGenerationFunction<T> for MGF1 {
