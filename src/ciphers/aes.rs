@@ -66,6 +66,60 @@
 //!    the message is Xor'd with it.
 //!
 //! To decrypt AES, the inverse of each operation is applied in reverse order.
+//!
+//! # Example usage
+//! ``` rust
+//! use dumbtls::bytes::Bytes;
+//! use dumbtls::ciphers::block::{BlockCipher, CBCMode};
+//! use dumbtls::ciphers::aes::{AES, AESKey, AESKeysize};
+//! use dumbtls::encoding::hex::{FromHex, ToHex};
+//! use dumbtls::keygen;
+//! use dumbtls::padding::PKCS7;
+//! 
+//! fn main() {
+//!     // Encrypting a single block:
+//!     let key = keygen::gen_key_aes(AESKeysize::Key128Bit);
+//!     println!("Key: {}", match &key {
+//!         AESKey::Key128Bit(k) => k.to_hex(),
+//!     });
+//!     let mut cipher = AES::new(&key);
+//!     let plaintext = Bytes::from_hex("00112233445566778899aabbccddeeff").unwrap();
+//!     println!("Plaintext: {}", plaintext.to_hex());
+//!     let ciphertext = cipher.encrypt_block(plaintext).unwrap();
+//!     println!("Ciphertext: {}", ciphertext.to_hex());
+//!     let plaintext = cipher.decrypt_block(ciphertext).unwrap();
+//!     println!("Decrypted Ciphertext: {}", plaintext.to_hex());
+//!     // Example output:
+//!     // Key: 53b1c6e417f237855289fbe6a49b91a3
+//!     // Plaintext: 00112233445566778899aabbccddeeff
+//!     // Ciphertext: 489d00143440107f7b7768228eae98ff
+//!     // Decrypted Ciphertext: 00112233445566778899aabbccddeeff
+//!      
+//!     // Using CBC mode to encrypt an arbitrary-length message:
+//!     let key = keygen::gen_key_aes(AESKeysize::Key128Bit);
+//!     let iv = keygen::gen_aes_iv();
+//!     println!("Key: {}", match &key {
+//!         AESKey::Key128Bit(k) => k.to_hex(),
+//!     });
+//!     println!("IV: {}", iv.to_hex());
+//!     let cipher = AES::new(&key);
+//!     let padding = PKCS7 { };
+//!     let mut cbc = CBCMode::with_padding(cipher, padding);
+//!     // n.b: Plaintext is no longer a multiple of the block size
+//!     let plaintext = Bytes::from_hex("00112233445566778899aabbccddeeffcafebabe").unwrap();
+//!     println!("Plaintext: {}", plaintext.to_hex());
+//!     let ciphertext = cbc.encrypt(&plaintext, &iv).unwrap();
+//!     println!("Ciphertext: {}", ciphertext.to_hex());
+//!     let plaintext = cbc.decrypt(&ciphertext, &iv).unwrap();
+//!     println!("Decrypted Ciphertext: {}", plaintext.to_hex());
+//!     // Example output:
+//!     // Key: f254592613b11eef615a2d0419ce83d1
+//!     // IV: 325544bd7add0817862daf2c0b914ff1
+//!     // Plaintext: 00112233445566778899aabbccddeeffcafebabe
+//!     // Ciphertext: f583b3775bad1eaa6d29ae9fc4a7e8eac85fc47af9ecc25916294385e2af86ac
+//!     // Decrypted Ciphertext: 00112233445566778899aabbccddeeffcafebabe
+//! }
+//! ```
 use crate::bytes::{Bytes, SequenceXor};
 use crate::ciphers::block::BlockCipher;
 
@@ -119,6 +173,12 @@ pub struct AES {
 
 impl AES {
     const BLOCK_SIZE: usize = 16;
+
+    pub fn new(key: &AESKey) -> AES {
+        AES {
+            key: key.clone(),
+        }
+    }
 
     /// Get the number of rounds of encryption/decryption to perform.
     ///
