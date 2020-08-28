@@ -1,6 +1,9 @@
 //! Implementation of RSAES-OAEP (RSA with Optimal Asymmetric Encryption
 //! Padding).
 //!
+//! This module implements RSAES-OAEP as outlined in [PKCS #1 (version
+//! 2.2)](https://tools.ietf.org/html/rfc8017).
+//!
 //! RSA, as initially described within the academic literature, is not suitable
 //! for cryptographic use: Encryption is entirely deterministic, so the same
 //! plaintext will always encrypt to the same ciphertext when the same key is
@@ -9,16 +12,86 @@
 //! reason that RSA must only be used with a secure padding scheme. One such
 //! scheme, which is recommended for modern use, is Optimal Asymmetric
 //! Encryption Padding (OAEP).
+//!
+//! OAEP uses a Feistel network in order to introduce a random element to RSA
+//! encryption: a random seed is generated, with fixed length (normally equal to
+//! the output length of a hash function). The message to be encrypted is padded
+//! with zeroes, until the total length of the input (message + padding + seed)
+//! equals the length of the RSA modulus to be used. The message and padding are
+//! concatenated to form the left hand side of the input for the Feistel
+//! Network, and the seed forms the right hand side. A mask generating function
+//! is used to form the round function: This uses the selected hash function to
+//! generate an arbitrary sized mask from its input. First a mask is generated
+//! from the random seed, then Xor'd with the message & padding to form the left
+//! hand side of the output. Then, a mask is generated from this output, and
+//! Xor'd with the random seed to form the right hand side of the output.
+//!
+//! To reverse OAEP, simply reverse the Feistel network, as normal.
+//!
+//! # Example usage
+//! ``` rust
+//! use dumbtls::bytes::Bytes;
+//! use dumbtls::ciphers::block::BlockCipher;
+//! use dumbtls::ciphers::oaep::OAEP;
+//! use dumbtls::ciphers::rsa::{RSAKeysize, RSAKey};
+//! use dumbtls::encoding::hex::{ToHex, FromHex};
+//! use dumbtls::keygen::gen_key_rsa;
+//! 
+//! fn main() {
+//!     let keypair = gen_key_rsa(RSAKeysize::Key1024Bit);
+//!     println!("Key modulus: {}", keypair.public.get_modulus());
+//!     println!("Public exponent: {}", keypair.public.get_exponent());
+//!     println!("Private exponent: {}", keypair.private.get_exponent());
+//!     let plaintext = Bytes::from_hex("cafebabe").unwrap();
+//!     println!("Plaintext: {}", plaintext.to_hex());
+//!     let pubkey = keypair.public.clone();
+//!     let mut enc_cipher = OAEP::new(pubkey);
+//!     let ciphertext = enc_cipher.encrypt_block(plaintext).unwrap();
+//!     println!("Ciphertext: {}", ciphertext.to_hex());
+//!     let mut dec_cipher = OAEP::new(keypair.private.clone());
+//!     let plaintext = dec_cipher.decrypt_block(ciphertext).unwrap();
+//!     println!("Decrypted ciphertext: {}", plaintext.to_hex());
+//!     // Example output:
+//!     // Key modulus: 92923642353856878160738108776523986341734... (Truncated)
+//!     // Public exponent: 65537
+//!     // Private exponent: 379613905318714845754840008795561112... (Truncated)
+//!     // Plaintext: cafebabe
+//!     // Ciphertext: 5bf31b4ed6a1f5e53684ef0d738d5595c89dcbe33b... (Truncated)
+//!     // Decrypted ciphertext: cafebabe
+//! }
+//! ```
 use crate::bytes::Bytes;
-use crate::ciphers::feistel::{FeistelCipher, FeistelCipherError, FeistelResult};
+use crate::ciphers::feistel::{FeistelCipher, FeistelNetwork, FeistelCipherError, FeistelResult};
 use crate::ciphers::rsa::{RSAKey, RSAResult, bytes_to_integer, integer_to_bytes, encrypt_int, decrypt_int};
-use crate::hashes::HashFunction;
+use crate::hashes::{HashFunction, sha2::{Sha2, Sha256, Digest}};
 use rand::{thread_rng, RngCore};
 use rug::Integer;
 use std::iter;
 
+pub type OAEP<T, U, V> = FeistelNetwork<OAEPBlock<T, U, V>>;
+
+impl<T> OAEP<T, Sha2<Sha256>, MGF1>
+where
+    T: RSAKey,
+{
+    pub fn new(key: T) -> OAEP<T, Sha2<Sha256>, MGF1> {
+        let mut seed = vec![0; 32];
+        thread_rng().fill_bytes(&mut seed);
+        let cipher = OAEPBlock {
+            label: vec![],
+            seed,
+            key, 
+            hash_function: Sha2 { hasher: Sha256::new() },
+            mask_generator: MGF1 { },
+        };
+        FeistelNetwork {
+            cipher,
+        }
+    }
+}
+
 pub struct OAEPBlock<T, U, V>
-where 
+where
     T: RSAKey,
     U: HashFunction,
     V: MaskGenerationFunction<U>
@@ -26,8 +99,8 @@ where
     pub label: Bytes,
     pub seed: Bytes,
     pub key: T,
-    pub _hash_function: U,
-    pub _mask_generator: V,
+    pub hash_function: U,
+    pub mask_generator: V,
 }
 
 impl<T, U, V> OAEPBlock<T, U, V>

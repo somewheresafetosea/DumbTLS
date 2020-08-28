@@ -245,9 +245,85 @@
 <span id="226">226</span>
 <span id="227">227</span>
 <span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
+<span id="232">232</span>
+<span id="233">233</span>
+<span id="234">234</span>
+<span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
+<span id="240">240</span>
+<span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
+<span id="251">251</span>
+<span id="252">252</span>
+<span id="253">253</span>
+<span id="254">254</span>
+<span id="255">255</span>
+<span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
+<span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Implementation of RSAES-OAEP (RSA with Optimal Asymmetric Encryption</span>
 <span class="doccomment">//! Padding).</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! This module implements RSAES-OAEP as outlined in [PKCS #1 (version</span>
+<span class="doccomment">//! 2.2)](https://tools.ietf.org/html/rfc8017).</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! RSA, as initially described within the academic literature, is not suitable</span>
 <span class="doccomment">//! for cryptographic use: Encryption is entirely deterministic, so the same</span>
@@ -257,16 +333,86 @@
 <span class="doccomment">//! reason that RSA must only be used with a secure padding scheme. One such</span>
 <span class="doccomment">//! scheme, which is recommended for modern use, is Optimal Asymmetric</span>
 <span class="doccomment">//! Encryption Padding (OAEP).</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! OAEP uses a Feistel network in order to introduce a random element to RSA</span>
+<span class="doccomment">//! encryption: a random seed is generated, with fixed length (normally equal to</span>
+<span class="doccomment">//! the output length of a hash function). The message to be encrypted is padded</span>
+<span class="doccomment">//! with zeroes, until the total length of the input (message + padding + seed)</span>
+<span class="doccomment">//! equals the length of the RSA modulus to be used. The message and padding are</span>
+<span class="doccomment">//! concatenated to form the left hand side of the input for the Feistel</span>
+<span class="doccomment">//! Network, and the seed forms the right hand side. A mask generating function</span>
+<span class="doccomment">//! is used to form the round function: This uses the selected hash function to</span>
+<span class="doccomment">//! generate an arbitrary sized mask from its input. First a mask is generated</span>
+<span class="doccomment">//! from the random seed, then Xor&#39;d with the message &amp; padding to form the left</span>
+<span class="doccomment">//! hand side of the output. Then, a mask is generated from this output, and</span>
+<span class="doccomment">//! Xor&#39;d with the random seed to form the right hand side of the output.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! To reverse OAEP, simply reverse the Feistel network, as normal.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! # Example usage</span>
+<span class="doccomment">//! ``` rust</span>
+<span class="doccomment">//! use dumbtls::bytes::Bytes;</span>
+<span class="doccomment">//! use dumbtls::ciphers::block::BlockCipher;</span>
+<span class="doccomment">//! use dumbtls::ciphers::oaep::OAEP;</span>
+<span class="doccomment">//! use dumbtls::ciphers::rsa::{RSAKeysize, RSAKey};</span>
+<span class="doccomment">//! use dumbtls::encoding::hex::{ToHex, FromHex};</span>
+<span class="doccomment">//! use dumbtls::keygen::gen_key_rsa;</span>
+<span class="doccomment">//! </span>
+<span class="doccomment">//! fn main() {</span>
+<span class="doccomment">//!     let keypair = gen_key_rsa(RSAKeysize::Key1024Bit);</span>
+<span class="doccomment">//!     println!(&quot;Key modulus: {}&quot;, keypair.public.get_modulus());</span>
+<span class="doccomment">//!     println!(&quot;Public exponent: {}&quot;, keypair.public.get_exponent());</span>
+<span class="doccomment">//!     println!(&quot;Private exponent: {}&quot;, keypair.private.get_exponent());</span>
+<span class="doccomment">//!     let plaintext = Bytes::from_hex(&quot;cafebabe&quot;).unwrap();</span>
+<span class="doccomment">//!     println!(&quot;Plaintext: {}&quot;, plaintext.to_hex());</span>
+<span class="doccomment">//!     let pubkey = keypair.public.clone();</span>
+<span class="doccomment">//!     let mut enc_cipher = OAEP::new(pubkey);</span>
+<span class="doccomment">//!     let ciphertext = enc_cipher.encrypt_block(plaintext).unwrap();</span>
+<span class="doccomment">//!     println!(&quot;Ciphertext: {}&quot;, ciphertext.to_hex());</span>
+<span class="doccomment">//!     let mut dec_cipher = OAEP::new(keypair.private.clone());</span>
+<span class="doccomment">//!     let plaintext = dec_cipher.decrypt_block(ciphertext).unwrap();</span>
+<span class="doccomment">//!     println!(&quot;Decrypted ciphertext: {}&quot;, plaintext.to_hex());</span>
+<span class="doccomment">//!     // Example output:</span>
+<span class="doccomment">//!     // Key modulus: 92923642353856878160738108776523986341734... (Truncated)</span>
+<span class="doccomment">//!     // Public exponent: 65537</span>
+<span class="doccomment">//!     // Private exponent: 379613905318714845754840008795561112... (Truncated)</span>
+<span class="doccomment">//!     // Plaintext: cafebabe</span>
+<span class="doccomment">//!     // Ciphertext: 5bf31b4ed6a1f5e53684ef0d738d5595c89dcbe33b... (Truncated)</span>
+<span class="doccomment">//!     // Decrypted ciphertext: cafebabe</span>
+<span class="doccomment">//! }</span>
+<span class="doccomment">//! ```</span>
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">bytes</span>::<span class="ident">Bytes</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ciphers</span>::<span class="ident">feistel</span>::{<span class="ident">FeistelCipher</span>, <span class="ident">FeistelCipherError</span>, <span class="ident">FeistelResult</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ciphers</span>::<span class="ident">feistel</span>::{<span class="ident">FeistelCipher</span>, <span class="ident">FeistelNetwork</span>, <span class="ident">FeistelCipherError</span>, <span class="ident">FeistelResult</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ciphers</span>::<span class="ident">rsa</span>::{<span class="ident">RSAKey</span>, <span class="ident">RSAResult</span>, <span class="ident">bytes_to_integer</span>, <span class="ident">integer_to_bytes</span>, <span class="ident">encrypt_int</span>, <span class="ident">decrypt_int</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">hashes</span>::<span class="ident">HashFunction</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">hashes</span>::{<span class="ident">HashFunction</span>, <span class="ident">sha2</span>::{<span class="ident">Sha2</span>, <span class="ident">Sha256</span>, <span class="ident">Digest</span>}};
 <span class="kw">use</span> <span class="ident">rand</span>::{<span class="ident">thread_rng</span>, <span class="ident">RngCore</span>};
 <span class="kw">use</span> <span class="ident">rug</span>::<span class="ident">Integer</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">iter</span>;
 
+<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">OAEP</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">U</span>, <span class="ident">V</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">FeistelNetwork</span><span class="op">&lt;</span><span class="ident">OAEPBlock</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">U</span>, <span class="ident">V</span><span class="op">&gt;&gt;</span>;
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">OAEP</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">Sha2</span><span class="op">&lt;</span><span class="ident">Sha256</span><span class="op">&gt;</span>, <span class="ident">MGF1</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">T</span>: <span class="ident">RSAKey</span>,
+{
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">key</span>: <span class="ident">T</span>) <span class="op">-&gt;</span> <span class="ident">OAEP</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">Sha2</span><span class="op">&lt;</span><span class="ident">Sha256</span><span class="op">&gt;</span>, <span class="ident">MGF1</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">seed</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0</span>; <span class="number">32</span>];
+        <span class="ident">thread_rng</span>().<span class="ident">fill_bytes</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">seed</span>);
+        <span class="kw">let</span> <span class="ident">cipher</span> <span class="op">=</span> <span class="ident">OAEPBlock</span> {
+            <span class="ident">label</span>: <span class="macro">vec</span><span class="macro">!</span>[],
+            <span class="ident">seed</span>,
+            <span class="ident">key</span>, 
+            <span class="ident">hash_function</span>: <span class="ident">Sha2</span> { <span class="ident">hasher</span>: <span class="ident">Sha256</span>::<span class="ident">new</span>() },
+            <span class="ident">mask_generator</span>: <span class="ident">MGF1</span> { },
+        };
+        <span class="ident">FeistelNetwork</span> {
+            <span class="ident">cipher</span>,
+        }
+    }
+}
+
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">OAEPBlock</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">U</span>, <span class="ident">V</span><span class="op">&gt;</span>
-<span class="kw">where</span> 
+<span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">RSAKey</span>,
     <span class="ident">U</span>: <span class="ident">HashFunction</span>,
     <span class="ident">V</span>: <span class="ident">MaskGenerationFunction</span><span class="op">&lt;</span><span class="ident">U</span><span class="op">&gt;</span>
@@ -274,8 +420,8 @@
     <span class="kw">pub</span> <span class="ident">label</span>: <span class="ident">Bytes</span>,
     <span class="kw">pub</span> <span class="ident">seed</span>: <span class="ident">Bytes</span>,
     <span class="kw">pub</span> <span class="ident">key</span>: <span class="ident">T</span>,
-    <span class="kw">pub</span> <span class="ident">_hash_function</span>: <span class="ident">U</span>,
-    <span class="kw">pub</span> <span class="ident">_mask_generator</span>: <span class="ident">V</span>,
+    <span class="kw">pub</span> <span class="ident">hash_function</span>: <span class="ident">U</span>,
+    <span class="kw">pub</span> <span class="ident">mask_generator</span>: <span class="ident">V</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">U</span>, <span class="ident">V</span><span class="op">&gt;</span> <span class="ident">OAEPBlock</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">U</span>, <span class="ident">V</span><span class="op">&gt;</span>

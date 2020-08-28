@@ -43,12 +43,12 @@
 <span id="24">24</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sha2</span>::{<span class="ident">Sha224</span>, <span class="ident">Sha256</span>, <span class="ident">Sha384</span>, <span class="ident">Sha512</span>, <span class="ident">Sha512Trunc224</span>, <span class="ident">Sha512Trunc256</span>};
-<span class="kw">use</span> <span class="ident">sha2</span>::<span class="ident">Digest</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sha2</span>::<span class="ident">Digest</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">hashes</span>::<span class="ident">HashFunction</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">bytes</span>::<span class="ident">Bytes</span>;
 
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Sha2</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Digest</span><span class="op">&gt;</span> {
-    <span class="ident">_hasher</span>: <span class="ident">T</span>
+    <span class="kw">pub</span> <span class="ident">hasher</span>: <span class="ident">T</span>
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Digest</span><span class="op">&gt;</span> <span class="ident">HashFunction</span> <span class="kw">for</span> <span class="ident">Sha2</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {

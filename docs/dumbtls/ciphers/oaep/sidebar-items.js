@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["MGF1",""],["OAEPBlock",""]],"trait":[["MaskGenerationFunction",""]]});
+initSidebarItems({"struct":[["MGF1",""],["OAEPBlock",""]],"trait":[["MaskGenerationFunction",""]],"type":[["OAEP",""]]});

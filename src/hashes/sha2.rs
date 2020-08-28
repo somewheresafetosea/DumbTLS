@@ -1,10 +1,10 @@
 pub use sha2::{Sha224, Sha256, Sha384, Sha512, Sha512Trunc224, Sha512Trunc256};
-use sha2::Digest;
+pub use sha2::Digest;
 use crate::hashes::HashFunction;
 use crate::bytes::Bytes;
 
 pub struct Sha2<T: Digest> {
-    _hasher: T
+    pub hasher: T
 }
 
 impl<T: Digest> HashFunction for Sha2<T> {
