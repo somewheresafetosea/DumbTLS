@@ -42,8 +42,52 @@
 //!
 //! # Example usage
 //! ``` rust
-//! use dumbtls::ciphers::DES;
+//! use dumbtls::bytes::Bytes;
+//! use dumbtls::ciphers::block::{BlockCipher, CBCMode};
+//! use dumbtls::ciphers::des::DES;
+//! use dumbtls::encoding::hex::{FromHex, ToHex};
 //! use dumbtls::keygen;
+//! use dumbtls::padding::PKCS7;
+//! 
+//! fn main() {
+//!     // Encrypting a single block:
+//!     let key = keygen::gen_key_des();
+//!     println!("Key: {}", key.to_hex());
+//!     let mut cipher = DES::new(&key);
+//!     let plaintext = Bytes::from_hex("cafebabecafebabe").unwrap();
+//!     println!("Plaintext: {}", plaintext.to_hex());
+//!     let ciphertext = cipher.encrypt_block(plaintext).unwrap();
+//!     println!("Ciphertext: {}", ciphertext.to_hex());
+//!     let plaintext = cipher.decrypt_block(ciphertext).unwrap();
+//!     println!("Decrypted Ciphertext: {}", plaintext.to_hex());
+//!     // Example output:
+//!     // Key: 29ab5b939fb28c69
+//!     // Plaintext: cafebabecafebabe
+//!     // Ciphertext: c5e99a6ae10903af
+//!     // Decrypted Ciphertext: cafebabecafebabe
+//! 
+//!     // Using CBC mode to encrypt an arbitrary-length message:
+//!     let key = keygen::gen_key_des();
+//!     let iv = keygen::gen_key_des();
+//!     println!("Key: {}", key.to_hex());
+//!     println!("IV: {}", iv.to_hex());
+//!     let cipher = DES::new(&key);
+//!     let padding = PKCS7 { };
+//!     let mut cbc = CBCMode::with_padding(cipher, padding);
+//!     // n.b: Plaintext is no longer a multiple of the block size
+//!     let plaintext = Bytes::from_hex("0011223344556677889900aa").unwrap();
+//!     println!("Plaintext: {}", plaintext.to_hex());
+//!     let ciphertext = cbc.encrypt(&plaintext, &iv).unwrap();
+//!     println!("Ciphertext: {}", ciphertext.to_hex());
+//!     let plaintext = cbc.decrypt(&ciphertext, &iv).unwrap();
+//!     println!("Decrypted Ciphertext: {}", plaintext.to_hex());
+//!     // Example output:
+//!     // Key: 72a5ea8842c1d5eb
+//!     // IV: 7cac5a01a9f5c831
+//!     // Plaintext: 0011223344556677889900aa
+//!     // Ciphertext: d73325924d1ed98604f92772f31e4d79
+//!     // Decrypted Ciphertext: 0011223344556677889900aa
+//! }
 //! ```
 use crate::bytes::{Bytes, SequenceXor};
 use crate::ciphers::feistel::{FeistelCipher, FeistelCipherError, FeistelNetwork, FeistelResult};

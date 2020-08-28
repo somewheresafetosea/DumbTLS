@@ -87,10 +87,9 @@ pub struct ECBMode<T: BlockCipher, U: PaddingScheme> {
     pub padding: U,
 }
 
-impl<T, U> ECBMode<T, U>
+impl<T> ECBMode<T, PKCS7>
 where
-    T: BlockCipher,
-    U: PaddingScheme,
+    T: BlockCipher
 {
     /// Create a new instance of the struct using the given cipher and a
     /// reasonable padding scheme.
@@ -104,7 +103,13 @@ where
             padding,
         }
     }
+}
 
+impl<T, U> ECBMode<T, U>
+where
+    T: BlockCipher,
+    U: PaddingScheme,
+{
     /// Create a new instance of the struct using the given cipher and padding
     /// scheme.
     ///

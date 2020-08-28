@@ -359,6 +359,11 @@
 <span id="340">340</span>
 <span id="341">341</span>
 <span id="342">342</span>
+<span id="343">343</span>
+<span id="344">344</span>
+<span id="345">345</span>
+<span id="346">346</span>
+<span id="347">347</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Modes of operation for symmetric block ciphers.</span>
 <span class="doccomment">//!</span>
@@ -449,10 +454,9 @@
     <span class="kw">pub</span> <span class="ident">padding</span>: <span class="ident">U</span>,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">U</span><span class="op">&gt;</span> <span class="ident">ECBMode</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">U</span><span class="op">&gt;</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">ECBMode</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">PKCS7</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">BlockCipher</span>,
-    <span class="ident">U</span>: <span class="ident">PaddingScheme</span>,
+    <span class="ident">T</span>: <span class="ident">BlockCipher</span>
 {
     <span class="doccomment">/// Create a new instance of the struct using the given cipher and a</span>
     <span class="doccomment">/// reasonable padding scheme.</span>
@@ -466,7 +470,13 @@
             <span class="ident">padding</span>,
         }
     }
+}
 
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">U</span><span class="op">&gt;</span> <span class="ident">ECBMode</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">U</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">T</span>: <span class="ident">BlockCipher</span>,
+    <span class="ident">U</span>: <span class="ident">PaddingScheme</span>,
+{
     <span class="doccomment">/// Create a new instance of the struct using the given cipher and padding</span>
     <span class="doccomment">/// scheme.</span>
     <span class="doccomment">///</span>
